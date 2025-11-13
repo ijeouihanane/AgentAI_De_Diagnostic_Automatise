@@ -48,32 +48,29 @@ Développée en novembre 2025 avec **Python 3.12.4**, **Flask**, **Apache Supers
 
 <div align="center">
 
-## Page Login 
-<img src="screenshots/Pagelogin.png" alt="Page login" width="800"/>
-
 ### Inscription
-<img src="screenshots/SignUpInterface.png" alt="Page d'inscription" width="800"/>
+<img src="Screenshots/SignUpInterface.png" alt="Page d'inscription" width="800"/>
 
 ### Page d'accueil
-<img src="screenshots/HomePage.png" alt="Page d'accueil" width="800"/>
+<img src="Screenshots/HomePage.png" alt="Page d'accueil" width="800"/>
 
 ### Interface chatbot
-<img src="screenshots/InterfaceAgent.png" alt="Interface du chatbot" width="800"/>
+<img src="Screenshots/InterfaceAgent.png" alt="Interface du chatbot" width="800"/>
 
 ### Gestions des utilisateurs
-<img src="screenshots/InterfaceUsersManagment.png" alt="Gestion des utilisateurs" width="800"/>
+<img src="Screenshots/InterfaceUsersManagment.png" alt="Gestion des utilisateurs" width="800"/>
 
 ### Interface des paramètres Rule-Based
-<img src="screenshots/InterfaceSettingsRule-based.png" alt=" Interface des paramètres Rule-Based" width="800"/>
+<img src="Screenshots/InterfaceSettingsRule-based.png" alt=" Interface des paramètres Rule-Based" width="800"/>
 
 ### Histprique des rapports générés
-<img src="screenshots/HistoryOfReportsPage.png" alt="Historique des rapports générés" width="800"/>
+<img src="Screenshots/HistoryOfReportsPage.png" alt="Historique des rapports générés" width="800"/>
 
 ## HomePageAdmin
-<img src="screenshots/HomePageAdmin.png" alt="Pagde d'accueil Admin" width="800"/>
+<img src="Screenshots/HomePageAdmin.png" alt="Pagde d'accueil Admin" width="800"/>
 
 ## Rapport généré
-<img src="screenshots/RapportGénéréPDF.png" alt="Rapport PDF généré" width="800"/>
+<img src="Screenshots/RapportGénéréPDF.png" alt="Rapport PDF généré" width="800"/>
 
 </div>
 
