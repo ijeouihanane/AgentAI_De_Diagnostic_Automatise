@@ -1,0 +1,213 @@
+{% extends 'base.html' %}
+{% block title %}Zen Networks Agent{% endblock %}
+{% block content %}
+            <div id="welcome-screen" class="welcome-screen">
+                <h1 class="welcome-title">Bienvenue sur Zen Networks Agent</h1>
+                <p class="welcome-subtitle">Utilisez l'IA pour analyser vos données réseau et optimiser vos opérations. Posez vos questions et obtenez des insights instantanés.</p>
+                <div class="suggestion-cards">
+                    <a href="/history" class="card">
+                        <h3><i class="bi bi-clock-history"></i> Historique</h3>
+                        <p>Accédez à l'historique de vos conversations passées pour retrouver vos analyses.</p>
+                    </a>
+                    <a href="http://127.0.0.1:8088/superset/dashboard/p/ZgN2BQVEQw8/?standalone=1" target="_blank" class="card">
+                        <h3><i class="bi bi-bar-chart"></i> Dashboard</h3>
+                        <p>Plongez dans vos données avec le tableau de bord interactif Superset.</p>
+                    </a>
+                    {% if current_user.is_admin() %}
+                        <a href="/settings" class="card">
+                            <h3><i class="bi bi-gear"></i> Paramètres</h3>
+                            <p>Configurez les options et les fonctionnalités avancées de votre application.</p>
+                        </a>
+                        <a href="/admin/users" class="card">
+                            <h3><i class="bi bi-people"></i> Gestion des utilisateurs</h3>
+                            <p>Gérez les utilisateurs et leurs permissions pour un contrôle total.</p>
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+            <div id="chat-interface" class="chat-interface" style="display:none;">
+                <div id="chat-messages" class="chat-messages"></div>
+                <div id="chat-input-wrap" class="chat-input-area">
+                    <form id="chat-form" autocomplete="off" style="display:flex; align-items:center; width:100%; gap:12px;">
+                        <textarea id="prompt" name="prompt" placeholder="Écrivez votre message... (Entrée pour envoyer)" rows="1" required></textarea>
+                        <button type="submit" id="submitBtn" class="send-button" title="Envoyer"><i class="bi bi-send"></i></button>
+                    </form>
+                    
+                </div>
+            </div>
+{% endblock %}
+{% block scripts %}
+    {{ super() }}
+    <script>
+        let currentConvId = null;
+        let isFirstSubmit = true;
+
+        function scrollMessagesToBottom() {
+            const m = document.getElementById('chat-messages');
+            if (!m) return;
+            m.scrollTop = m.scrollHeight;
+        }
+
+        function appendMessage(role, content) {
+            const messages = document.getElementById('chat-messages');
+            if (!messages) return;
+            const bubble = document.createElement('div');
+            bubble.className = 'message-item ' + (role === 'user' ? 'user-message' : 'ai-message');
+            bubble.innerHTML = content;
+            messages.appendChild(bubble);
+            scrollMessagesToBottom();
+        }
+
+        function loadConversations() {
+            fetch('/conversations/list')
+                .then(r => r.json())
+                .then(data => {
+                    const list = qs('#conversation-list');
+                    list.innerHTML = '';
+                    data.forEach(conv => {
+                        const item = document.createElement('div');
+                        item.className = 'conversation-item';
+                        item.dataset.id = conv.id;
+                        item.innerHTML = `<span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${conv.title}</span>
+                                          <button class="delete-conv-btn" data-id="${conv.id}" title="Supprimer"><i class="bi bi-trash"></i></button>`;
+                        item.onclick = (e) => { if (e.target.closest('.delete-conv-btn')) return; selectConversation(conv.id, item); };
+                        item.querySelector('.delete-conv-btn').onclick = (e) => { e.stopPropagation(); deleteConversation(conv.id); };
+                        list.appendChild(item);
+                    });
+                })
+                .catch(err => console.error('Erreur loadConversations:', err));
+        }
+
+        function selectConversation(id, elem) {
+            currentConvId = parseInt(id);
+            qsa('.conversation-item').forEach(e => e.classList.remove('active'));
+            if (elem) elem.classList.add('active');
+            qs('#welcome-screen').style.display = 'none';
+            qs('#chat-interface').style.display = 'block';
+            loadMessages(currentConvId);
+            qs('#chat-messages').innerHTML = '';
+            qs('#chat-input-wrap').classList.add('initial');
+            isFirstSubmit = true;
+            setTimeout(() => { qs('#prompt').focus(); }, 80);
+        }
+
+        function loadMessages(convId) {
+            fetch(`/conversations/${convId}/messages`)
+                .then(r => r.json())
+                .then(data => {
+                    const messages = qs('#chat-messages');
+                    messages.innerHTML = '';
+                    data.forEach(m => {
+                        appendMessage(m.role, escapeHtml(m.content));
+                    });
+                    scrollMessagesToBottom();
+                })
+                .catch(err => console.error('Erreur loadMessages:', err));
+        }
+
+        qs('#new-conv').addEventListener('click', () => {
+            const now = new Date();
+            const title = `Chat du ${now.toLocaleDateString('fr-FR')} à ${now.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}`;
+            fetch('/conversations/create', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: new URLSearchParams({ title: title })
+            })
+            .then(r => r.json())
+            .then(data => {
+                currentConvId = data.id;
+                loadConversations();
+                setTimeout(() => {
+                    const el = document.querySelector(`.conversation-item[data-id="${data.id}"]`);
+                    if (el) selectConversation(data.id, el);
+                    qs('#chat-messages').innerHTML = '';
+                    qs('#prompt').focus();
+                }, 150);
+            })
+            .catch(err => console.error('Erreur create conversation:', err));
+        });
+
+        function deleteConversation(id) {
+            if (!confirm("Supprimer cette conversation ?")) return;
+            fetch(`/conversations/delete/${id}`, { method: 'POST' })
+                .then(r => r.json())
+                .then(data => {
+                    if (data.success) {
+                        if (currentConvId === parseInt(id)) {
+                            currentConvId = null;
+                            qs('#chat-interface').style.display = 'none';
+                            qs('#welcome-screen').style.display = 'flex';
+                            qs('#chat-input-wrap').classList.remove('fixed');
+                            qs('#chat-input-wrap').classList.add('initial');
+                        }
+                        loadConversations();
+                        qs('#chat-messages').innerHTML = '';
+                    } else {
+                        alert('Impossible de supprimer la conversation.');
+                    }
+                })
+                .catch(err => console.error('Erreur deleteConversation:', err));
+        }
+
+        qs('#chat-form').addEventListener('submit', function (ev) {
+            ev.preventDefault();
+            const input = qs('#prompt');
+            const prompt = input.value.trim();
+            if (!prompt || !currentConvId) return;
+
+            appendMessage('user', escapeHtml(prompt));
+            input.value = '';
+            scrollMessagesToBottom();
+
+            if (isFirstSubmit) { isFirstSubmit = false; }
+
+            fetch('/', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: new URLSearchParams({ prompt: prompt, conversation_id: currentConvId })
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.error) {
+                    appendMessage('assistant', escapeHtml("Erreur : " + data.error));
+                } else {
+                    const content = data.reply || '';
+                    if (content.includes('<a') || content.includes('&lt;a')) {
+                        appendMessage('assistant', content);
+                    } else {
+                        appendMessage('assistant', escapeHtml(content));
+                    }
+                }
+                scrollMessagesToBottom();
+            })
+            .catch(err => {
+                appendMessage('assistant', escapeHtml("Erreur serveur lors de l'envoi : " + err.message));
+                console.error(err);
+            });
+        });
+
+        function escapeHtml(str) {
+            if (!str && str !== 0) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;')
+                .replace(/\n/g, '<br>');
+        }
+
+        window.addEventListener('load', () => {
+            loadConversations();
+            const input = document.getElementById('prompt');
+            if (input) {
+                input.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                        document.getElementById('chat-form').dispatchEvent(new Event('submit', { cancelable: true }));
+                }
+            });
+            }
+        });
+    </script>
+{% endblock %}

@@ -1,0 +1,30 @@
+{
+    "ips_suspectes": [
+        "192.0.2.1",
+        "203.0.113.5",
+        "10.10.10.10",
+        "213.144.191.12",
+        "213.181.63.73",
+        "11.11.11.11"
+    ],
+    "apps_interdites": [
+        "P2P",
+        "Streaming",
+        "Jeux",
+        "IoT-Scada",
+        "BitTorrent"
+    ],
+    "domaines_blacklistes": [
+        "badsite.com",
+        "malware.example",
+        "adult-content.net"
+    ],
+    "ports_non_standards": [
+        8080,
+        8888,
+        5000,
+        3000,
+        9999,
+        343
+    ]
+}

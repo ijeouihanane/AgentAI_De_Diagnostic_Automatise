@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% block title %}Inscription - ZenNetwork{% endblock %}
+{% block head %}
+    {{ super() }}
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="icon" href="data:,">
+    <meta name="color-scheme" content="dark">
+    <meta name="theme-color" content="#0b0f17">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+{% endblock %}
+{% block sidebar %}{% endblock %}
+{% block content %}
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="auth-header">
+                <div class="auth-logo">
+                    <i class="bi bi-person-plus"></i>
+                </div>
+                <h1 class="auth-title">Créer un compte</h1>
+                <p class="auth-subtitle">Rejoignez Zen Networks Agent</p>
+            </div>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <ul class="flash-messages">
+                        {% for category, message in messages %}
+                            <li class="flash-{{ category }}">{{ message }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            {% endwith %}
+
+            <form method="POST" action="{{ url_for('register') }}" class="auth-form">
+                <div class="auth-form-group">
+                    <label for="username">Nom d'utilisateur</label>
+                    <input type="text" id="username" name="username" placeholder="Votre nom d'utilisateur" required>
+                </div>
+                <div class="auth-form-group">
+                    <label for="email">Adresse email</label>
+                    <input type="email" id="email" name="email" placeholder="Votre adresse email" required>
+                </div>
+                <div class="auth-form-group">
+                    <label for="password">Mot de passe</label>
+                    <input type="password" id="password" name="password" placeholder="Votre mot de passe" required>
+                </div>
+                <button type="submit" class="auth-btn">S'inscrire</button>
+            </form>
+
+            <p class="auth-switch">Déjà inscrit ? <a href="{{ url_for('login') }}" class="auth-link">Se connecter</a></p>
+        </div>
+    </div>
+{% endblock %}

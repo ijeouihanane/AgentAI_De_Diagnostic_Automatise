@@ -1,0 +1,28 @@
+@"
+# Environnements & dépendances
+venv_superset/
+packages/
+superset_home/
+
+# Rapports générés
+static/reports/*
+!static/reports/.gitkeep
+
+# Python & temp
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.log
+.env
+.venv/
+venv/
+
+# Fichiers générés
+*.png
+*.jpg
+*.pdf
+*.xlsx
+*.csv
+*.tmp
+"@ | Out-File -Encoding UTF8 .gitignore

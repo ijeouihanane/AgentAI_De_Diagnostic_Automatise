@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Rapport Anomalies</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        h1, h2 {
+            text-align: center;
+            color: #24658E;
+        }
+        .timestamp {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 14px;
+            color: #555;
+        }
+        .chart {
+            text-align: center;
+            margin: 20px 0;
+        }
+        table {
+            width: 95%;
+            margin: 0 auto;
+            border-collapse: collapse;
+            font-size: 12px;
+        }
+        table, th, td {
+            border: 1px solid #aaa;
+        }
+        th {
+            background-color: #24658E;
+            color: white;
+            padding: 6px;
+            text-align: center;
+        }
+        td {
+            padding: 5px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <h1>Rapport des Anomalies Détectées</h1>
+    <div class="timestamp">Généré le {{ current_time }}</div>
+
+    {% if chart_path %}
+    <div class="chart">
+        <img src="file:///{{ chart_path }}" width="400">
+    </div>
+    {% endif %}
+
+    <h2>Détails des Anomalies</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>IMSI</th>
+                <th>Anomalie</th>
+                <th>Date</th>
+                <th>Catégorie</th>
+                <th>Application</th>
+                <th>Protocole</th>
+                <th>Client</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for anomaly in anomalies %}
+            <tr>
+                <td>{{ anomaly['imsi_anonymized'] }}</td>
+                <td>{{ anomaly['Anomalies_detectees'] }}</td>
+                <td>{{ anomaly['_timestamp'] }}</td>
+                <td>{{ anomaly['app_category_name'] }}</td>
+                <td>{{ anomaly['app_name'] }}</td>
+                <td>{{ anomaly['app_protocol'] }}</td>
+                <td>{{ anomaly['client'] }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

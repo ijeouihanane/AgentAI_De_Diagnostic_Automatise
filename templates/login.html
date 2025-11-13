@@ -1,0 +1,197 @@
+
+    <style>
+
+
+    /* Importation de la police Inter */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Inter', sans-serif;
+    background: linear-gradient(135deg, #0b0f17, #1a2233);
+    color: #fff;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Container principal */
+.auth-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 20px;
+}
+
+/* Carte d'authentification */
+.auth-card {
+    background: rgba(20, 25, 38, 0.9);
+    backdrop-filter: blur(12px);
+    border-radius: 16px;
+    padding: 40px 35px;
+    max-width: 400px;
+    width: 100%;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+    text-align: center;
+    animation: fadeIn 0.8s ease-in-out;
+}
+
+/* Titre */
+.auth-title {
+    font-size: 1.6rem;
+    font-weight: 700;
+    margin-bottom: 25px;
+    color: #ffffff;
+}
+
+/* Messages flash */
+.flash-messages {
+    list-style: none;
+    padding: 0;
+    margin-bottom: 20px;
+}
+.flash-success {
+    background: #2ecc71;
+    color: white;
+    padding: 10px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+}
+.flash-error {
+    background: #e74c3c;
+    color: white;
+    padding: 10px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+}
+
+/* Champs formulaire */
+.form-group {
+    margin-bottom: 18px;
+    text-align: left;
+}
+.form-group label {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #ccc;
+    display: block;
+    margin-bottom: 6px;
+}
+.form-group input {
+    width: 100%;
+    padding: 12px 14px;
+    border-radius: 10px;
+    border: 1px solid #333;
+    background: #11151f;
+    color: #fff;
+    outline: none;
+    transition: border 0.3s, background 0.3s;
+}
+.form-group input:focus {
+    border: 1px solid #3a8ef6;
+    background: #1c2230;
+}
+
+/* Checkbox */
+.checkbox-group {
+    display: flex;
+    align-items: center;
+}
+.checkbox-group input {
+    margin-right: 8px;
+}
+
+/* Bouton */
+.auth-button {
+    width: 100%;
+    padding: 12px;
+    background: linear-gradient(135deg, #3a8ef6, #6c63ff);
+    border: none;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #fff;
+    cursor: pointer;
+    transition: transform 0.2s, background 0.3s;
+}
+.auth-button:hover {
+    transform: translateY(-2px);
+    background: linear-gradient(135deg, #6c63ff, #3a8ef6);
+}
+
+/* Lien inscription */
+.auth-switch {
+    margin-top: 18px;
+    font-size: 0.9rem;
+    color: #aaa;
+}
+.auth-switch a {
+    color: #3a8ef6;
+    font-weight: 600;
+    text-decoration: none;
+}
+.auth-switch a:hover {
+    text-decoration: underline;
+}
+
+/* Animation */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-15px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+    </style>
+{% extends 'base.html' %}
+{% block title %}Connexion - ZenNetwork{% endblock %}
+{% block head %}
+    {{ super() }}
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="icon" href="data:,">
+    <meta name="color-scheme" content="dark">
+    <meta name="theme-color" content="#0b0f17">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+{% endblock %}
+{% block sidebar %}{% endblock %}
+{% block content %}
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="auth-header">
+                <div class="auth-logo">
+                    <i class="bi bi-shield-lock"></i>
+                </div>
+                <h1 class="auth-title">Se connecter</h1>
+                <p class="auth-subtitle">Accédez à votre compte Zen Networks Agent</p>
+            </div>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <ul class="flash-messages">
+                        {% for category, message in messages %}
+                            <li class="flash-{{ category }}">{{ message }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            {% endwith %}
+
+            <form method="POST" action="{{ url_for('login') }}" class="auth-form">
+                <div class="auth-form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" placeholder="Votre adresse email" required>
+                </div>
+                <div class="auth-form-group">
+                    <label for="password">Mot de passe</label>
+                    <input type="password" id="password" name="password" placeholder="Votre mot de passe" required>
+                </div>
+                
+                <button type="submit" class="auth-btn">Se connecter</button>
+            </form>
+
+            <p class="auth-switch">Pas encore de compte ? 
+                <a href="{{ url_for('register') }}" class="auth-link">S'inscrire</a>
+            </p>
+        </div>
+    </div>
+{% endblock %}
